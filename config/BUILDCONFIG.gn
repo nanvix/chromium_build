@@ -279,6 +279,8 @@ if (target_os == "android") {
   _default_toolchain = "//build/toolchain/aix:$target_cpu"
 } else if (target_os == "zos") {
   _default_toolchain = "//build/toolchain/zos:$target_cpu"
+} else if (target_os == "nanvix") {
+  _default_toolchain = "//build/toolchain/nanvix:$target_cpu"
 } else {
   assert(false, "Unsupported target_os: $target_os")
 }

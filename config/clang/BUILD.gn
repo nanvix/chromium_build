@@ -244,6 +244,8 @@ template("clang_lib") {
         } else {
           assert(false)  # Unhandled cpu type
         }
+      } else if (current_os == "nanvix") {
+        _dir = "nanvix"
       } else {
         assert(false)  # Unhandled target platform
       }
