@@ -16,7 +16,7 @@ config("compiler") {
 
   cflags = []
 
-  cflags_cc = []
+  cflags_cc = ["-Wno-format"]
 
   ldflags = []
 
