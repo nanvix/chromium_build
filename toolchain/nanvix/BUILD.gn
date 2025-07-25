@@ -5,9 +5,27 @@
 import("//build/toolchain/gcc_toolchain.gni")
 import("//build/config/compiler/compiler.gni")
 
-clang_toolchain("clang_x86") {
-    toolchain_args = {
-      current_os = "nanvix"
-      current_cpu = "x86"
+gcc_toolchain("clang_x86") {
+  _path = "/home/ppenna/toolchain-v0.9.x/bin"
+  _is_path_absolute = get_path_info(_path, "abspath") == _path
+
+  # Preserve absolute paths for tools like distcc.
+  if (_is_path_absolute && filter_include([ _path ], [ "//*" ]) == []) {
+    prefix = _path
+  } else {
+    prefix = rebase_path(_path, root_build_dir)
+  }
+
+  cc = "${prefix}/clang"
+  cxx = "${prefix}/clang++"
+  ld = "${prefix}/i686-nanvix-ld"
+  readelf = "${prefix}/i686-nanvix-readelf"
+  ar = "${prefix}/i686-nanvix-ar"
+  nm = "${prefix}/i686-nanvix-nm"
+
+  toolchain_args = {
+    is_clang = true
+    current_os = "nanvix"
+    current_cpu = "x86"
   }
 }

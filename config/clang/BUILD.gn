@@ -165,7 +165,7 @@ if (use_cros_sysroot_libs) {
 }
 
 template("clang_lib") {
-  if (!defined(invoker.libname) || is_wasm) {
+  if (!defined(invoker.libname) || is_wasm || current_os == "nanvix") {
     not_needed(invoker, "*")
     config(target_name) {
     }
@@ -244,8 +244,6 @@ template("clang_lib") {
         } else {
           assert(false)  # Unhandled cpu type
         }
-      } else if (current_os == "nanvix") {
-        _dir = "nanvix"
       } else {
         assert(false)  # Unhandled target platform
       }
