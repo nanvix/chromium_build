@@ -6,7 +6,7 @@ import("//build/toolchain/gcc_toolchain.gni")
 import("//build/config/compiler/compiler.gni")
 
 gcc_toolchain("clang_x86") {
-  _path = "/home/ppenna/toolchain-v0.9.x/bin"
+  _path = "/home/danbugs/toolchain-v0.9.x/bin"
   _is_path_absolute = get_path_info(_path, "abspath") == _path
 
   # Preserve absolute paths for tools like distcc.
