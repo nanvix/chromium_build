@@ -535,6 +535,19 @@ config("compiler") {
     }
   }
 
+  # Nanvix-specific compiler flags
+  if (is_nanvix && current_cpu == "x86") {
+    cflags += [
+      "-march=i586",
+      "-mno-sse",
+      "-mno-sse2",
+      "-mno-sse3",
+      "-msoft-float",
+      "-mstackrealign",
+      "-fasynchronous-unwind-tables",
+    ]
+  }
+
   # Linux-specific compiler flags setup.
   # ------------------------------------
   if (use_icf && (!is_apple || use_lld)) {
@@ -1249,11 +1262,36 @@ config("compiler_cpu_abi") {
         cflags += [ "-m32" ]
         ldflags += [ "-m32" ]
       }
-      if (!is_nacl) {
-        cflags += [
-          "-mfpmath=sse",
-          "-msse3",
-        ]
+      if (is_nanvix) {
+        # For Nanvix, we MUST NOT use SSE for floating point
+        # Remove any SSE-related flags
+        if (current_cpu == "x86" || current_cpu == "ia32") {
+          cflags += [
+            "-m32",
+            "-march=i586",
+            "-mno-sse",
+            "-mno-sse2", 
+            "-mno-sse3",
+            "-mno-ssse3",
+            "-mno-sse4",
+            "-mno-sse4.1",
+            "-mno-sse4.2",
+            "-mno-avx",
+            "-mno-avx2",
+            "-mfpmath=387",
+            "-mstackrealign",
+          ]
+          # DO NOT add -mfpmath=sse or any SSE enabling flags!
+        }
+      } else if (current_cpu == "x86" || current_cpu == "ia32") {
+        # For other x86 platforms, use SSE
+        if (!is_nacl) {
+          cflags += [
+            "-m32",
+            "-mfpmath=sse",
+            "-msse3",
+          ]
+        }
       }
     } else if (current_cpu == "arm") {
       if (is_clang && !is_android && !is_nacl && !is_chromeos_device) {
