@@ -1,0 +1,61 @@
+# build/config/nanvix/BUILD.gn
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build/toolchain/toolchain.gni")
+
+# This is included by reference in the //build/config/compiler config that
+# is applied to all targets. It is here to separate out the logic.
+
+config("compiler") {
+  # These flags are shared between the C compiler and linker.
+  defines = [
+    "_ALL_SOURCE=1",
+    "__nanvix__",
+    "V8_OS_NANVIX",
+  ]
+
+  cflags = []
+  cflags_cc = []
+  ldflags = []
+
+  # Nanvix doesn't support SSE instructions, which can cause invalid opcode exceptions
+  if (current_cpu == "x86" || current_cpu == "x86_64") {
+    cflags += [
+            # Nanvix supports i686 processors with SSE and SSE2 features.
+            "-m32",
+            "-march=i686",
+            "-msse",
+            "-msse2",
+
+            # The following vector extensions are not available on i686 processors.
+            # Still, we explicitly disable them, to avoid avoid compiling unsupported
+            # code paths in third-party libraries (e.g. Highway).
+            "-mno-sse3",
+            "-mno-ssse3",
+            "-mno-sse4",
+            "-mno-sse4.1",
+            "-mno-sse4.2",
+            "-mno-avx",
+            "-mno-avx2",
+
+            # We use the following flags to improve our debugging experience.
+            "-fasynchronous-unwind-tables",
+            "-mstackrealign",
+    ]
+
+    # Apply same flags to C++
+    cflags_cc += [
+      "-Wno-format",
+      "-fno-exceptions",  # Nanvix doesn't support C++ exceptions
+      "-fno-rtti",
+    ]
+
+    # Linker flags
+    ldflags += [
+      "-m32",  # Ensure 32-bit mode
+    ]
+  }
+}

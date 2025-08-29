@@ -165,7 +165,7 @@ if (use_cros_sysroot_libs) {
 }
 
 template("clang_lib") {
-  if (!defined(invoker.libname) || is_wasm) {
+  if (!defined(invoker.libname) || is_wasm || current_os == "nanvix") {
     not_needed(invoker, "*")
     config(target_name) {
     }

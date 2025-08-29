@@ -1,0 +1,31 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/toolchain/gcc_toolchain.gni")
+import("//build/config/compiler/compiler.gni")
+
+gcc_toolchain("clang_x86") {
+  _path = "/home/ppenna/toolchain-v0.x.x/bin"
+  _is_path_absolute = get_path_info(_path, "abspath") == _path
+
+  # Preserve absolute paths for tools like distcc.
+  if (_is_path_absolute && filter_include([ _path ], [ "//*" ]) == []) {
+    prefix = _path
+  } else {
+    prefix = rebase_path(_path, root_build_dir)
+  }
+
+  cc = "${prefix}/clang"
+  cxx = "${prefix}/clang++"
+  ld = "${prefix}/i686-nanvix-ld"
+  readelf = "${prefix}/i686-nanvix-readelf"
+  ar = "${prefix}/i686-nanvix-ar"
+  nm = "${prefix}/i686-nanvix-nm"
+
+  toolchain_args = {
+    is_clang = true
+    current_os = "nanvix"
+    current_cpu = "x86"
+  }
+}

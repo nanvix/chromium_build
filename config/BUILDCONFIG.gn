@@ -50,6 +50,10 @@ if (target_os == "") {
   target_os = host_os
 }
 
+if (target_os == "nanvix") {
+  is_nanvix = true
+}
+
 if (target_cpu == "") {
   if (target_os == "android") {
     # If we're building for Android, we should assume that we want to
@@ -141,6 +145,8 @@ declare_args() {
               current_cpu != "ppc64" && current_cpu != "ppc" &&
               current_cpu != "mips" && current_cpu != "mips64" &&
               current_cpu != "riscv64")
+
+  is_nanvix = false
 
   # Allows the path to a custom target toolchain to be injected as a single
   # argument, and set as the default toolchain.
@@ -279,6 +285,8 @@ if (target_os == "android") {
   _default_toolchain = "//build/toolchain/aix:$target_cpu"
 } else if (target_os == "zos") {
   _default_toolchain = "//build/toolchain/zos:$target_cpu"
+} else if (target_os == "nanvix") {
+  _default_toolchain = "//build/toolchain/nanvix:clang_$target_cpu"
 } else {
   assert(false, "Unsupported target_os: $target_os")
 }
@@ -319,6 +327,7 @@ is_nacl = current_os == "nacl"
 is_wasm = current_os == "emscripten"
 is_watchos = current_os == "watchos"
 is_win = current_os == "win" || current_os == "winuwp"
+is_nanvix = current_os == "nanvix"
 
 is_apple = is_ios || is_mac || is_watchos
 is_posix = !is_win && !is_fuchsia
