@@ -6,7 +6,7 @@ import("//build/toolchain/gcc_toolchain.gni")
 import("//build/config/compiler/compiler.gni")
 
 gcc_toolchain("clang_x86") {
-  _path = "/home/danbugs/repos/nanvix-toolchain-v09x-copy/bin"
+  _path = getenv("NANVIX_TOOLCHAIN") + "/bin"
   _is_path_absolute = get_path_info(_path, "abspath") == _path
 
   # Preserve absolute paths for tools like distcc.
