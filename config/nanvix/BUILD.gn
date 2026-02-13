@@ -10,6 +10,8 @@ import("//build/toolchain/toolchain.gni")
 # is applied to all targets. It is here to separate out the logic.
 
 config("compiler") {
+  _nanvix_toolchain = getenv("NANVIX_TOOLCHAIN")
+  _nanvix_sysroot = "${_nanvix_toolchain}/i686-nanvix"
 
   # These flags are shared between the C compiler and linker.
   defines = [
@@ -19,7 +21,18 @@ config("compiler") {
     "V8_OS_NANVIX",
   ]
 
-  cflags = []
+  cflags = [
+    "--sysroot=${_nanvix_sysroot}",
+
+    # The Nanvix cross-compiler does not automatically add the sysroot's
+    # include directory to the system header search path. We use -idirafter
+    # so that the sysroot's C headers (pthread.h, sched.h, sys/types.h, etc.)
+    # are found but placed AFTER the C++ standard library headers, avoiding
+    # libc++'s wrapper headers (e.g. <cstring> -> <string.h>) from resolving
+    # to the wrong header.
+    "-idirafter",
+    "${_nanvix_sysroot}/include",
+  ]
   cflags_cc = []
   ldflags = []
 
@@ -27,6 +40,7 @@ config("compiler") {
   # Linker flags
   ldflags += [
     "-m32",  # Ensure 32-bit mode
+    "--sysroot=${_nanvix_sysroot}",
   ]
 }
 
